@@ -2,5 +2,5 @@
 --   console.log(results);
 -- });
 SELECT * 
-FROM role AS employee_role
-JOIN department ON role.department_id = department.id;
+FROM employee_role
+JOIN department ON employee_role.department_id = department.id;
