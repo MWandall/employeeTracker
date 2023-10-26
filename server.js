@@ -29,9 +29,22 @@ console.log(asciiArt);
 
 // Connect to database
 
-sequelize.sync({ force: false }).then(() => {
-  app.listen(PORT, () => console.log('Now listening'));
-});
+// sequelize.sync({ force: false }).then(() => {
+//   app.listen(PORT, () => console.log('Now listening'));
+// });
+
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    // MySQL username,
+    user: "root",
+    // MySQL password
+    password: "123qwe",
+    database: "employees_db",
+  },
+  console.log(`Connected to the employees_db database.`)
+);
+
 
 
 const questions = [
