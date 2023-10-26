@@ -11,12 +11,13 @@ VALUES  ("RockAndRole", 4500000, 3),
         ("RoleModel", 1, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES  ("Hank", "Hill", 1, 3),
-        ("Al", "Green", 3, NULL),
-        ("Jason", "Funderberker", 1, 3),
-        ("Gon", "Freecss", 1, 3),
-        ("John", "Locke", 1, 3),
-        ("Ellen", "Ripley", 1, 3),
-        ("Gandalf", "The Grey", 1, 3),
-        ("Carmen", "Sandiego", 1, 3),
-        ("Arsene", "Lupin III", 1, 3);
+VALUES  
+        ("Al", "Green", 1, NULL),
+        ("Hank", "Hill", 3, 1),
+        ("Jason", "Funderberker", 2, 1),
+        ("Gon", "Freecss", 2, 1),
+        ("Bobby", "Caldwell", 4, 3),
+        ("Ellen", "Ripley", 4, 3),
+        ("Gandalf", "The Grey", 3, 2),
+        ("Elliott", "Smith", 4, 3),
+        ("Arsene", "Lupin III", 3, 2);

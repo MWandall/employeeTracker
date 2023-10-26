@@ -1,6 +1,9 @@
-const express = require('express');
+const express = require("express");
+const inquirer = require("inquirer");
 // Import and require mysql2
-const mysql = require('mysql2');
+const mysql = require("mysql2");
+require("dotenv").config();
+const cTable = require('console.table');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -18,9 +21,8 @@ const asciiArt = `
     ( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )
      > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ < 
  `;
- console.log(asciiArt);
+console.log(asciiArt);
 
-  
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -28,20 +30,76 @@ app.use(express.json());
 // Connect to database
 const db = mysql.createConnection(
   {
-    host: 'localhost',
+    host: "localhost",
     // MySQL username,
-    user: 'root',
+    user: "root",
     // MySQL password
-    password: '123qwe',
-    database: 'classlist_db'
+    password: "123qwe",
+    database: "employees_db",
   },
-  console.log(`Connected to the employee_db database.`)
+  console.log(`Connected to the employees_db database.`)
 );
 
 // Query database
-// db.query('SELECT * FROM employees', function (err, results) {
-//   console.log(results);
-// });
+db.query("SELECT * FROM departments", function (err, results) {
+  console.log(results);
+});
+
+const questions = [
+  {
+    type: "list",
+    name: "choices",
+    message: "What would you like to do?",
+    choices: [
+      "View all departments",
+      "View all roles",
+      "View all employees",
+      "Add a department",
+      "Add a role",
+      "Add an employee",
+      "Update an employee role",
+      "quit",
+    ],
+  },
+];
+
+// inquirer.prompt (questions)
+// .then((answers) =>{
+//   console.log(answers);
+// })
+
+
+//*idk what to do for a function
+async function questionsMenu() {
+
+
+inquirer.prompt(questions).then((answers) => {
+  if (answers.choices === "View all departments") {
+    db.query("SELECT * FROM department", function (err, results) {
+      console.table(results);
+       questionsMenu(); //******* */
+    });
+  }
+
+  if (answers.choices === "View all roles") {
+    db.query( "SELECT * FROM employee_role JOIN department ON employee_role.department_id = department.id",
+      function (err, results) {
+        console.table(results);
+        questionsMenu();
+      }
+    );
+  }
+
+  if (answers.choices === "View all employees") {
+   
+    db.query("SELECT * FROM employee", function (err, results) {
+      console.table(results);
+
+    });
+  }
+})};
+
+
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {
@@ -53,22 +111,66 @@ app.listen(PORT, () => {
 });
 
 
-//TODO use inquirer 'type: list' to ask user the following options: 
-// *view all departments
-// *view all roles
-// *view all employees
-// *add a department
-// *add a role
-// *add an employee
-// *update an employee role
-
-//TODO 
-//TODO 
-//TODO 
-//TODO 
 
 
-// 
+
+
+
+
+
+
+
+
+
+
+//*for update employee
+// const temp = results.map((employee) => ({
+//   name: `${employee.first_name} ${employee.last_name}`,
+//   value: `${employee.id}`,
+// }));
+// inquirer
+//   .prompt([
+//     {
+//       type: "list",
+//       message: "Which is employee do you wish to select?",
+//       name: "employee",
+//       choices: temp,
+//     },
+//   ])
+//   .then((response) => console.log(response));
+
+
+
+
+
+
+
+
+
+
+
+
+
+//TODO use inquirer 'type: list' to ask user the following options:
+// *view all departments --- get
+// *view all roles --- get
+// *view all employees --- get
+// *add a department --- post
+// *add a role --- post
+// *add an employee --- post
+// *update an employee role --- put
+//extra
+// 'Update an employee manager',
+// "View employees by department",
+// 'Delete a department',
+// 'Delete a role',
+// 'Delete an employee',
+//TODO
+//TODO
+//TODO
+//TODO
+
+//
 // WHEN I choose to view all departments
 // THEN I am presented with a formatted table showing department names and department ids
 // WHEN I choose to view all roles
@@ -82,8 +184,7 @@ app.listen(PORT, () => {
 // WHEN I choose to add an employee
 // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 // WHEN I choose to update an employee role
-// THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
-
+// THEN I am prompted to select an employee to update and their new role and this information is updated in the database
 
 //GIVEN a command-line application that accepts user input
 // WHEN I start the application
