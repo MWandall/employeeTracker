@@ -1,12 +1,12 @@
-const express = require("express");
+// const express = require("express");
 const inquirer = require("inquirer");
 // Import and require mysql2
 const mysql = require("mysql2");
-require("dotenv").config();
+const sequelize = require('./config/connection');
 const cTable = require('console.table');
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+// const PORT = process.env.PORT || 3001;
+// const app = express();
 
 const asciiArt = `
      /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\ 
@@ -24,26 +24,15 @@ const asciiArt = `
 console.log(asciiArt);
 
 // Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
 
 // Connect to database
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    // MySQL username,
-    user: "root",
-    // MySQL password
-    password: "123qwe",
-    database: "employees_db",
-  },
-  console.log(`Connected to the employees_db database.`)
-);
 
-// Query database
-db.query("SELECT * FROM departments", function (err, results) {
-  console.log(results);
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log('Now listening'));
 });
+
 
 const questions = [
   {
@@ -58,26 +47,79 @@ const questions = [
       "Add a role",
       "Add an employee",
       "Update an employee role",
-      "quit",
+      
     ],
   },
 ];
 
-// inquirer.prompt (questions)
-// .then((answers) =>{
-//   console.log(answers);
-// })
 
 
-//*idk what to do for a function
-async function questionsMenu() {
+//to add a department
+function addDepartment() {
+  inquirer.prompt({
+    type: "input",
+    name: "department_name",
+    message: "What would you like the name of new department?"
+  })
+  .then((answers)=> {
+    console.log(answers);
+    console.log(answers.department_name);
+    const query = `INSERT INTO department (department_name) VALUES ("${answers.department_name}")`
+    db.query(query, (err, results) => {
+      if (err) {
+      console.log(err);
+      } else {
+        console.log("Department added successfully!");
+        questionsMenu();
+      }
+    })
 
+  }) 
+};
+
+//to update and employee role
+function updateEmployeeRole () {
+  const temp = results.map((employee) => ({
+    name: `${employee.first_name} ${employee.last_name}`,
+    value: `${employee.id}`,
+  }));
+  inquirer.prompt([{
+    type: "choices",
+    name: "employee",
+    message: "What would you like to update?",
+    choices: temp
+  },
+  
+  {
+    type: "input",
+    name: "employee_role",
+    message: "What would you like the employee's new role to be?"
+  }
+])
+  .then ((answers) => {
+    console.log(answers);
+    console.log(answers.employee_role);
+    const query = `UPDATE employee SET role_id = ${answers.employee_role} WHERE id = ${answers.employee}`
+
+  })
+db.query (
+"UPDATE employee SET role_id = 5 WHERE id = 2", function (err, result) {
+  if (err) {console.log(err)
+  } else {
+    console.log("Successfully updated employee role.")
+  }
+})
+}
+
+
+//main menu function
+function questionsMenu() {
 
 inquirer.prompt(questions).then((answers) => {
   if (answers.choices === "View all departments") {
     db.query("SELECT * FROM department", function (err, results) {
       console.table(results);
-       questionsMenu(); //******* */
+       questionsMenu(); 
     });
   }
 
@@ -91,25 +133,31 @@ inquirer.prompt(questions).then((answers) => {
   }
 
   if (answers.choices === "View all employees") {
-   
     db.query("SELECT * FROM employee", function (err, results) {
       console.table(results);
+      questionsMenu();
 
     });
   }
+
+  if (answers.choices === "Add a department") {
+    addDepartment()
+  }
+
+  // if (answers.choices === "Add a role") {
+
+  // }
+
+  // if (answers.choices === "Add an employee") {
+
+  // }
+
+      if (answers.choices === "Update an employee role") {
+        updateEmployeeRole()
+      }
 })};
 
-
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
+questionsMenu();
 
 
 
