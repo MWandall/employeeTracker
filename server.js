@@ -92,37 +92,41 @@ function addDepartment() {
 
 //to update and employee role
 function updateEmployeeRole () {
-  const temp = results.map((employee) => ({
-    name: `${employee.first_name} ${employee.last_name}`,
-    value: `${employee.id}`,
-  }));
-  inquirer.prompt([{
-    type: "choices",
-    name: "employee",
-    message: "What would you like to update?",
-    choices: temp
-  },
-  
-  {
-    type: "input",
-    name: "employee_role",
-    message: "What would you like the employee's new role to be?"
-  }
-])
-  .then ((answers) => {
-    console.log(answers);
-    console.log(answers.employee_role);
-    const query = `UPDATE employee SET role_id = ${answers.employee_role} WHERE id = ${answers.employee}`
 
-  })
-db.query (
-"UPDATE employee SET role_id = 5 WHERE id = 2", function (err, result) {
-  if (err) {console.log(err)
-  } else {
-    console.log("Successfully updated employee role.")
-  }
-})
+db.query( "SELECT * FROM employee",
+ function (err, results) {
+ console.log(results);
+ const emp = results.map((employee) => ({
+  name: `${employee.first_name} ${employee.last_name}`,
+  value: `${employee.id}`,
+}));
+inquirer.prompt([{
+  type: "choices",
+  name: "employee",
+  message: "What would you like to update?",
+  choices: emp
+},
+
+{
+  type: "input",
+  name: "employee_role",
+  message: "What would you like the employee's new role to be?"
 }
+])
+.then ((answers) => {
+  console.log(answers);
+  console.log(answers.employee_role);
+  const query = `UPDATE employee SET role_id = ${answers.employee_role} WHERE id = ${answers.employee}`
+
+})
+
+}
+)
+        
+
+
+}
+
 
 
 //main menu function
